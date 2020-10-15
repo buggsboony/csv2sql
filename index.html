@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title>CSV2SQL Insert</title>
+
+    <style>
+      body { background-color: #2a2a2a;}
+      textarea
+      {
+        color :#ffe4c4;
+        background : #1a1a1a;
+        width: 100%;
+        height :300px;
+      }
+    </style>
+
+  </head>
+  <body>
+ 
+
+
+  <textarea id="input" placeholder="Place your CSV content here"></textarea>
+
+<br/>
+<button onclick="job()">Requete</button>
+ <br/>
+
+  <textarea id="output" placeholder="Output"></textarea>
+   
+
+
+<script>
+
+
+function job()
+{
+  var input  = document.getElementById("input");
+  var output  = document.getElementById("output");
+
+  //faut pas faire ça, il faut gérer la lecture entre double quotes
+  var lines = input.value.split("\n");
+
+  var sep=";";
+  var columns = null;
+  var data =[];
+  for(var i=0; i<lines.length; i++)
+  {
+    var line = lines[i];    
+    var parts = line.split(sep);
+    if( line.trim() )  //éviter de travailler sur des lignes completement vide
+    {
+        if(i==0){
+          columns = parts;
+        }else if(i>0)
+        { //data
+          var escaped_parts =[];
+          for(var j=0; j<parts.length; j++){ escaped_parts.push( parts[j].replace(/'/g, "\\'")  ); }
+          data.push( "\'"+escaped_parts.join("\',\'") + "\'");
+        }//data or columns
+    }
+  }//next
+
+
+  var sql = "  INSERT INTO [mytable] \n"
+  + "( `"+ columns.join("`,`")+"`) \n"
+  + "VALUES ("+ data.join(')\n,(') +")" ;
+
+
+  output.value=sql;
+
+
+}//job
+
+
+</script>
+
+
+  </body>
+</html>
