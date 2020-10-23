@@ -18,9 +18,23 @@
   </head>
   <body>
  
+<!-- 
+si premier caracter est "
+aller jusqu'au prochain "  => cell
+dans cell, remplacer tous "" par "
+Sql remplacer \ par \\
+-->
+  <textarea id="input" placeholder="Place your CSV content here">
+
+    col1;col2;col3
+    j'ai;"semi;colon";c:\windows
+    "new
+    line";"plus""sieurs"" guillemets";single 'quote' here
+    "quotes""""collées";B sans C;
 
 
-  <textarea id="input" placeholder="Place your CSV content here"></textarea>
+
+  </textarea>
 
 <br/>
 <button onclick="job()">Requete</button>
@@ -33,44 +47,160 @@
 <script>
 
 
+// function job_old()
+// {
+//   var input  = document.getElementById("input");
+//   var output  = document.getElementById("output");
+
+//   //faut pas faire ça, il faut gérer la lecture entre double quotes
+//   var lines = input.value.split("\n");
+
+//   var sep=";";
+//   var columns = null;
+//   var data =[];
+//   for(var i=0; i<lines.length; i++)
+//   {
+//     var line = lines[i];    
+//     var parts = line.split(sep);
+//     if( line.trim() )  //éviter de travailler sur des lignes completement vide
+//     {
+//         if(i==0){
+//           columns = parts;
+//         }else if(i>0)
+//         { //data
+//           var escaped_parts =[];
+//           for(var j=0; j<parts.length; j++){ escaped_parts.push( parts[j].replace(/'/g, "\\'")  ); }
+//           data.push( "\'"+escaped_parts.join("\',\'") + "\'");
+//         }//data or columns
+//     }
+//   }//next
+
+
+//   var sql = "  INSERT INTO [mytable] \n"
+//   + "( `"+ columns.join("`,`")+"`) \n"
+//   + "VALUES ("+ data.join(')\n,(') +")" ;
+
+
+//   output.value=sql;
+
+
+// }//job_old
+
+
+function readCsvLine(str)
+{
+  var csv_cell="";
+  var r=null,dbq=null;
+  var l =str.indexOf('"');
+  if( l === 0 )
+  { //cell complexe
+    //chercher la prochaine double quote seule
+    dbq = str.indexOf('""',l+1);
+    if(dbq===-1) //aucune double quote trouvée
+    {
+      debugger;
+      r = str.indexOf('"',l+1);
+      csv_cell = str.substr(l+1,r-1);
+    }else
+    {
+      
+    }
+    
+  }else
+  {
+    r = str.indexOf(';');    
+    csv_cell= str.substr(0,r);
+  }
+  return csv_cell;
+}//readCsvLine
+
+function csvSplit(str)
+{
+  var line="",lines = [];
+  var cq=null,c1,c=null, nl=false;
+  var recording = false, recorded="";
+  var cells=[]; var cell="";
+  for(var i=0, len=str.length; i<len; i++)
+  {
+    nl=false;
+    cq = str[i-1]; //previous
+    c = str[i];
+    c1 = str[i+1];
+    
+    //si " est le premier caractere de ligne qu'on rencontre
+    if( ((cq===undefined) || (cq!='"') ) && (c=='"') )
+    {
+       recording=true;
+    }
+    
+    if(recording)
+    {
+      recorded+=c; //quoi qu'il arrive
+    }
+
+    if(c=='\n')
+    {
+      console.log("new line normal");
+      nl=true;
+    }
+    if(c1===undefined)
+    {
+      console.log("new line par halt");
+      nl=true;
+    }
+    
+    if(nl)
+    {
+      //stocker la ligne
+      lines.push(line);
+      line=""; //reset pour créer la prochine
+    }else
+    {
+      if(!recording)  //Circuit normal sans quotes
+      { 
+        if(c!=';') line += c;   //ne pas compter le dernier ;  
+      }
+    }
+
+     //si " est le dernier avant caractère ; ou un \n ou une fin de chaine
+    if( recording &&   
+          (     (c=='"')      &&      ( (c1==';')  || (c1=== '\n' ) ||  (c1===undefined) )
+          )      
+      )
+    {
+      recording=false;
+      //store line recorded
+      cell = recorded;
+      recorded = ""; //reset recorded
+    }
+
+
+  }//next
+
+
+  console.log(lines); debugger;
+  return lines;
+}//csvSplit
+
 function job()
 {
   var input  = document.getElementById("input");
   var output  = document.getElementById("output");
 
   //faut pas faire ça, il faut gérer la lecture entre double quotes
-  var lines = input.value.split("\n");
+  var content = input.value;
+
+  var lines =  csvSplit(content);
+
 
   var sep=";";
   var columns = null;
-  var data =[];
-  for(var i=0; i<lines.length; i++)
-  {
-    var line = lines[i];    
-    var parts = line.split(sep);
-    if( line.trim() )  //éviter de travailler sur des lignes completement vide
-    {
-        if(i==0){
-          columns = parts;
-        }else if(i>0)
-        { //data
-          var escaped_parts =[];
-          for(var j=0; j<parts.length; j++){ escaped_parts.push( parts[j].replace(/'/g, "\\'")  ); }
-          data.push( "\'"+escaped_parts.join("\',\'") + "\'");
-        }//data or columns
-    }
-  }//next
+  var data =[]; 
 
-
-  var sql = "  INSERT INTO [mytable] \n"
-  + "( `"+ columns.join("`,`")+"`) \n"
-  + "VALUES ("+ data.join(')\n,(') +")" ;
-
-
-  output.value=sql;
 
 
 }//job
+
 
 
 </script>
