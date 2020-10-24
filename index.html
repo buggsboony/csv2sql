@@ -27,7 +27,7 @@ Sql remplacer \ par \\
   <textarea id="input" placeholder="Place your CSV content here">col1;col2;col3
     j'ai;"semi;colon";c:\windows
 "new
-    line";"plus""sieurs"" guillemets";single 'quote' here
+    line";"plus""sieurs""guillemets";single 'quote' here
 "quotes""""collées";B sans C;</textarea>
 
 <br/>
@@ -137,7 +137,7 @@ function csvSplit(str)
     c1 = str[i+1];
     
     //if( (c=='C')  ) debugger; //debug line
-    if( (cq=='w')  ) debugger; //debug line
+    //if( (cq=='w')  ) debugger; //debug line
 
     //si " est le premier caractere de ligne qu'on rencontre
     if( !recording && (
@@ -153,26 +153,25 @@ function csvSplit(str)
       recorded+=c; //quoi qu'il arrive
     }
 
-    if(c=='\n')
-    {
-    //  console.log("new line normal");
-      nl=true;
-    }
-    if(c1===undefined)
-    {
-   //   console.log("new line par halt");
-      nl=true;
-    }
-    
-    if(nl)
-    {
-        fnStockCell(true);
-    }else
-    {
       if(!recording)  //Circuit normal sans quotes
       { 
 
 
+          if(c=='\n')
+          {
+          //  console.log("new line normal");
+            nl=true;
+          }
+          if(c1===undefined)
+          {
+        //   console.log("new line par halt");
+            nl=true;
+          }
+          
+          if(nl)
+          {
+              fnStockCell(true);
+          }
 
         if(c!=';') cell += c;   //ne pas compter le dernier ';'
         else
@@ -182,7 +181,7 @@ function csvSplit(str)
           fnStockCell();
         }                
       }
-    }
+ 
 
      //si " est le dernier avant caractère ; ou un \n ou une fin de chaine
     if( recording &&   
@@ -222,11 +221,23 @@ function job()
 
   var sep=";";
   var columns = lines[0];
-  var data =[];
+  var data =  []; // lines.slice(1); //reste de l'array
 
+  for(var i=1; i<lines.length; i++)
+  {
+      var da = lines[i];
+      var out_dat = [];
+      for(var j=0; j<da.length; j++)
+      {
+          var cell = da[j];
+          var escaped_cell = cell.replace(/'/g, "\\'");
+          out_dat.push( escaped_cell ); }       
+      }//next cell
+      console.warn(out_dat);
 
-  console.log(lines);
-  debugger;
+  }//next data row
+
+  console.log(lines);   debugger;
 
   var sql = "  INSERT INTO [mytable] \n"
   + "( `"+ columns.join("`,`")+"`) \n"
