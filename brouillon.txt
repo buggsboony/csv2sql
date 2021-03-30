@@ -1,0 +1,15 @@
+
+CONSTRAINT city_pk PRIMARY KEY  (id)
+
+UNIQUE INDEX `digit3_key` (`digit3`) USING BTREE
+
+TINYINT NULL DEFAULT NULL
+
+`text30` VARCHAR(30) NULL DEFAULT NULL 
+
+
+CREATE TABLE `bidon_local` (
+	`digit3` INT(3) NULL
+)
+COLLATE='utf8mb4_unicode_ci'
+;
