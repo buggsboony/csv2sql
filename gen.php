@@ -57,8 +57,18 @@ function gen_insert()
 
 }//gen_insert
 
+//convert to excel letter
+function excel_letter($i)
+{
+    return chr($i+64);
+}//convert to excel letter
 
 
+//var_dump( letter_excel("Z") ); die("pause test");
+function letter_excel($L)
+{
+    return ord($L)-64;
+}//convert to excel letter
 
 $creates=array();
 $inserts=array();
@@ -67,23 +77,35 @@ foreach($correspondances as $tablename => $colsinfo):
  
     $create_table = gen_create($tablename, $colsinfo);
     echo "create table $tablename: \n ";var_dump($create_table); //die("pause 1 tab");
-    $creates[] = $create_table;
+    $creates[] = $create_table;    
     //Récupérer et ranger par table, la structure pour préparer les colonnes de l'insert
+    $table_columns[]
 endforeach;
 
-
-$csv_file="";
-
+$data_path ="./data";
+$csv_file="GDom.xls"; $tablename = "gdom";
+$sep="\t";
+$fullname=$data_path."/".$csv_file;
 $row = 1;
-if (($handle = fopen("test.csv", "r")) !== FALSE) {
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        $num = count($data);
-        echo "<p> $num champs à la ligne $row: <br /></p>\n";
-        $row++;
-        for ($c=0; $c < $num; $c++) {
-            echo $data[$c] . "<br />\n";
-        }
+if (($handle = fopen($fullname, "r")) !== FALSE) {
+    while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
+        // $num = count($data);
+        // //echo "<p> $num champs à la ligne $row: <br /></p>\n";
+        // $row++;
+        
+        // for ($c=0; $c < $num; $c++) {
+        //     //echo $data[$c] . "\n";
+
+        // }
+        foreach( $data as $col_index=>$value):
+            //echo "col_index="; var_dump($col_index);
+            //echo "value="; var_dump($value);
+            $L = excel_letter($col_index);
+
+        endforeach;
+        if($row>=2)break;
     }
     fclose($handle);
 }
+
 ?>
