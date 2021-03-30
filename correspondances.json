@@ -1,11 +1,10 @@
-[
-    {
+{
         "gdom":
         {
             "A":{"column":"code", "datatype":"INT(3) NULL DEFAULT NULL", "more": "CONSTRAINT {{column}}_pk PRIMARY KEY  (`{{column}}`)"},
-            "B":{"column":"descripteur", "datatype":"VARCHAR(255) NULL DEFAULT NULL",
-            "C":{"column":"descripteur_typo", "datatype":"VARCHAR(255) NULL DEFAULT NULL",
-            "F":{"column":"code_famille", "type":"varchar(5)",
+            "B":{"column":"descripteur", "datatype":"VARCHAR(255) NULL DEFAULT NULL"},
+            "C":{"column":"descripteur_typo", "datatype":"VARCHAR(255) NULL DEFAULT NULL"},
+            "F":{"column":"code_famille", "type":"varchar(5)"},
             "S":{"column":"code_arborescence", "type":"varchar(2)"}
         },
         "fcod":
@@ -21,5 +20,5 @@
             "T":{"column":"code_arborescence", "datatype":"varchar(20)"}
         }
     }
-]    
+   
 
