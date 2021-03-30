@@ -1,15 +1,15 @@
 {
         "gdom":
         {
-            "A":{"column":"code", "datatype":"INT(3) NULL DEFAULT NULL", "more": "CONSTRAINT {{column}}_pk PRIMARY KEY  (`{{column}}`)"},
+            "A":{"column":"code", "datatype":"INT(3) NULL DEFAULT NULL", "more": "PRIMARY KEY (`{{column}}`) USING BTREE"},
             "B":{"column":"descripteur", "datatype":"VARCHAR(255) NULL DEFAULT NULL"},
             "C":{"column":"descripteur_typo", "datatype":"VARCHAR(255) NULL DEFAULT NULL"},
-            "F":{"column":"code_famille", "type":"varchar(5)"},
-            "S":{"column":"code_arborescence", "type":"varchar(2)"}
+            "F":{"column":"code_famille", "datatype":"varchar(5)"},
+            "S":{"column":"code_arborescence", "datatype":"varchar(2)"}
         },
         "fcod":
         {
-            "A":{"column":"code", "datatype":"INT(3) NULL DEFAULT UNIQUE", "more": "CONSTRAINT {{column}}_pk PRIMARY KEY  (`{{column}}`)"},
+            "A":{"column":"code", "datatype":"INT(3) NULL DEFAULT", "more": "PRIMARY KEY (`{{column}}`) USING BTREE"},
             "B":{"column":"descripteur", "datatype":"varchar(255)"},
             "C":{"column":"descripteur_typo", "datatype":"varchar(255)"},
             "G":{"column":"champ_semantique", "datatype":"VARCHAR(258) NULL DEFAULT NULL"},
