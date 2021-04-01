@@ -2,17 +2,20 @@
 
     textarea{
 
-        width : 90%;
-        border:solid 1px #090909;
-        background-color: #090909;
-        color: #A0A0A0;
-        height: 200px;
+        width : 100%;
+        border:solid 1px #212444;
+        background-color: #212744;
+        color: #3cc632;
+        height: 100%;
     }
 
 </style>
 
-<?php
 
+
+<textarea>
+<?php
+// -------------  http://localhost:8080/gen.php
 
 $correspondance="correspondances.json";
 $content = file_get_contents($correspondance);
@@ -119,14 +122,14 @@ $inserts=array();
 //Parcourir les correspondances
 foreach($correspondances as $tablename => $colsinfo):
     $create_table = gen_create($tablename, $colsinfo);
-    echo "create table $tablename: \n ";var_dump($create_table); //die("pause 1 tab");
+    //echo "create table $tablename: \n ";var_dump($create_table); //die("pause 1 tab");
     $creates[] = $create_table;    
     //Récupérer et ranger par table, la structure pour préparer les colonnes de l'insert
     $columns = getColumns($colsinfo); //Out, variable de récupération des colonnes.    
     $table_columns[$tablename]=$columns;
 
     //Afficher ça la requete create :
-    echo "<textarea>$create_table</textarea></br>";
+    echo "/********************  CREATE TABLE  ***********************************************/  \n  $create_table\n\n\n";
 endforeach;
 
 //echo "table cols:"; var_dump( $table_columns ); die("check columns");
@@ -159,7 +162,14 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
                 if( array_key_exists($L, $columns_htable) )
                 {
                     $colname = $columns_htable[$L];
-                    $datasql[$colname]=$value;                
+
+                    
+                    //Régler le prob d'encodage :
+                    //$utf8_line = mb_convert_encoding($line, "Windows-1252", "UTF-8"); //Fonctionne avec presque toutes les tables sauf "diplomes" (/part_line_47_2_.sql) et autres
+         
+                    $final_value = mb_convert_encoding($value, "UTF-8", "Windows-1252"); //Fonctionne avec Diplomes, tous les acents sont là + encoding "utf8"  OUURAA fonctionne avec toutes les tables
+                            
+                    $datasql[$colname]= addslashes($final_value);  
                 }         
             endforeach;
             //echo " data sql:"; var_dump( $datasql );*
@@ -172,7 +182,7 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
     $sql_insert = gen_insert($tablename, $insert_values);
 
     //echo "sqlinsert : \n"; var_dump( $sql_insert);
-    echo "<textarea>$sql_insert</textarea></br>\n";
+    echo "/********************  REQUETE INSERT ************************************/\n   $sql_insert \n\n\n";
 
 }//gen from csv file
 
@@ -180,6 +190,8 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 
 gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom",  $sep="\t", $data_path ="./data");
 
-gen_from_csv( $table_columns, $csv_file="FCod.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
+gen_from_csv( $table_columns, $csv_file="FCodtest.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
 
 ?>
+
+</textarea>
