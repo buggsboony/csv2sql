@@ -139,12 +139,13 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 {         
     $fullname=$data_path."/".$csv_file;
     $row = 1;
+    if(!file_exists($fullname) ){ echo "Le fichier '$csv_file' n'existe pas!\n"; return; }
     $columns_htable = $table_columns[$tablename] ;//Récupérer la correspondance Excel => Colonnes nommées
     $insert_values = array();
 
     if (($handle = fopen($fullname, "r")) !== FALSE) 
     {
-        while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
+        while (($data = fgetcsv($handle, $maxlinelen=null, "\t")) !== FALSE) {
             // $num = count($data);
             // //echo "<p> $num champs à la ligne $row: <br /></p>\n";
             // $row++;
@@ -190,7 +191,7 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 
 gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom",  $sep="\t", $data_path ="./data");
 
-gen_from_csv( $table_columns, $csv_file="FCodtest.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
+gen_from_csv( $table_columns, $csv_file="FCod.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
 
 ?>
 
