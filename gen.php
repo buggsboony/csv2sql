@@ -1,22 +1,6 @@
-<style>
-
-    textarea{
-
-        width : 100%;
-        border:solid 1px #212444;
-        background-color: #212744;
-        color: #3cc632;
-        height: 100%;
-    }
-
-</style>
-
-
-
-<textarea>
 <?php
 // -------------  http://localhost:8080/gen.php
-date_default_timezone_set("America/Martinique");
+date_default_timezone_set("America/yellowknife");
 $correspondance="correspondances.json";
 $content = file_get_contents($correspondance);
 //echo "json file :"; var_dump($content);
@@ -26,7 +10,7 @@ $correspondances = json_decode($content);
 //echo " corresp JSON: ";var_dump( $correspondances);
 if($correspondances===null)
 {
-    echo "Oups, JSON invalide";
+    echo "/* Oups, JSON invalide  */\n\n";
 }
 
 
@@ -203,9 +187,9 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 
 
 //Détection des colonnes automatiquement
-function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $onRowAdd=null, $sep=";", $data_path ="./data")
+function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $onRowAdd=null, $sep=";", $data_path =".")
 {         
-    $fullname=$data_path."/".$csv_file;
+    $fullname=$data_path."/".$csv_file;    
     $row = 1;
 
     //$columns_htable = $table_columns[$tablename] ;//Récupérer la correspondance Excel => Colonnes nommées
@@ -260,43 +244,5 @@ function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $onRowAd
 
 //gen_from_csv( $table_columns, $csv_file="FCod.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
 
-$IMO_unique = 0;
-gen_insert_from_csv($csv_file="Navires_export_stationpilotage.csv", $tablename = "stpf_navires"
-//,  $force_values=array("dateMaj"=>$now)
-,$onRowAdd = function($row)
-{
-    global $IMO_unique;
-    $vol_espace = $row["volume"];
-    $row["volume"] = preg_replace("/[^A-Za-z0-9 ]/", '', $vol_espace);
-    $row["dateMaj"] =  date("Y-m-d H:i:s");
-
-
-    //Arranger la colonne unique :
-    $dateCrea = trim( $row["dateCrea"] );
-    $dateCrea = preg_replace("/[^A-Za-z0-9 ]/", '', $dateCrea ); 
-    if( !$dateCrea ) 
-    {    
-        $row["dateCrea"] = null;
-    }
-
-    $dt = new DateTime();
-
-    //Arranger la colonne unique :
-    $numIMO = $row["numIMO"];
-    $numIMO = preg_replace("/[^A-Za-z0-9 ]/", '', $numIMO ); 
-    if( !$numIMO ) 
-    {
-        //$numIMO = "T".$dt->getTimestamp();
-        $numIMO = "YY". $IMO_unique++;
-        $row["numIMO"] = $numIMO;
-    }
-    return $row;
-}
-,
- $sep=";", $data_path ="./data");
- 
-
 
 ?>
-
-</textarea>
