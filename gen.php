@@ -16,7 +16,7 @@
 <textarea>
 <?php
 // -------------  http://localhost:8080/gen.php
-
+date_default_timezone_set("America/Martinique");
 $correspondance="correspondances.json";
 $content = file_get_contents($correspondance);
 //echo "json file :"; var_dump($content);
