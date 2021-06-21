@@ -144,7 +144,7 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 
     if (($handle = fopen($fullname, "r")) !== FALSE) 
     {
-        while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
+        while (($data = fgetcsv($handle, $max_line=null, "\t")) !== FALSE) {
             // $num = count($data);
             // //echo "<p> $num champs à la ligne $row: <br /></p>\n";
             // $row++;
@@ -188,9 +188,70 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 
 
 
-gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom",  $sep="\t", $data_path ="./data");
+//Détection des colonnes automatiquement
+function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $force_values=array(), $sep=";", $data_path ="./data")
+{         
+    $fullname=$data_path."/".$csv_file;
+    $row = 1;
 
-gen_from_csv( $table_columns, $csv_file="FCodtest.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
+    //$columns_htable = $table_columns[$tablename] ;//Récupérer la correspondance Excel => Colonnes nommées
+    $insert_values = array();
+
+    $lc = 0; $columns=array();
+    if (($handle = fopen($fullname, "r")) !== FALSE) 
+    {
+        while (($data = fgetcsv($handle, $max_line=null, $sep )) !== FALSE) {         
+            $datasql = array();      
+            $lc++;
+            foreach( $data as $col_index=>$value):
+                // echo "col_index="; var_dump($col_index);
+                // echo "value="; var_dump($value);
+                
+                $final_value=$value;
+                //$final_value = mb_convert_encoding($value, "UTF-8", "Windows-1252"); //Fonctionne avec Diplomes, tous les acents sont là + encoding "utf8"  OUURAA fonctionne avec toutes les tables
+                if($lc>1)
+                {                             
+                    $colname= $columns[$col_index];                    
+                    $datasql[$colname]= addslashes($final_value);  
+ 
+                }else
+                {
+                    //Remplir les colonnes
+                    $columns[$col_index]=$final_value;
+                }
+                 
+            endforeach;
+            if( $lc>1 ) 
+            {
+                //LEs ajout fait par le code
+                foreach( $force_values as $force_name => $force_value  )
+                {
+                    $datasql[$force_name] = $force_value;
+                }
+                //echo " data sql:"; var_dump( $datasql ); die("paus");
+                $insert_values[] = $datasql;
+            }
+            //if($row>=1)break;    
+        }//endwhile
+        fclose($handle);
+    } //CSV read
+
+    $sql_insert = gen_insert($tablename, $insert_values);
+
+    //echo "sqlinsert : \n"; var_dump( $sql_insert);
+    echo "/********************  REQUETE INSERT ************************************/\n   $sql_insert \n\n\n";
+}//gen from csv file
+
+//gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom",  $sep="\t", $data_path ="./data");
+
+//gen_from_csv( $table_columns, $csv_file="FCod.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
+
+
+$now=date("Y-m-d");
+gen_insert_from_csv($csv_file="Navires_export_stationpilotage.csv", $tablename = "stpf_navires",  $force_values=array("dateMaj"=>$now),
+ $sep=";", $data_path ="./data");
+ 
+
 
 ?>
 
