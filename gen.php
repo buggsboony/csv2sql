@@ -139,17 +139,12 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 {         
     $fullname=$data_path."/".$csv_file;
     $row = 1;
-    if(!file_exists($fullname) ){ echo "Le fichier '$csv_file' n'existe pas!\n"; return; }
     $columns_htable = $table_columns[$tablename] ;//Récupérer la correspondance Excel => Colonnes nommées
     $insert_values = array();
 
     if (($handle = fopen($fullname, "r")) !== FALSE) 
     {
-<<<<<<< HEAD
         while (($data = fgetcsv($handle, $max_line=null, "\t")) !== FALSE) {
-=======
-        while (($data = fgetcsv($handle, $maxlinelen=null, "\t")) !== FALSE) {
->>>>>>> 45a4a85f0e1d7aef2a1e9affcf4a51ee2064eaca
             // $num = count($data);
             // //echo "<p> $num champs à la ligne $row: <br /></p>\n";
             // $row++;
@@ -194,7 +189,7 @@ function gen_from_csv( $table_columns, $csv_file="GDom.xls", $tablename = "gdom"
 
 
 //Détection des colonnes automatiquement
-function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $force_values=array(), $sep=";", $data_path ="./data")
+function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $onRowAdd=null, $sep=";", $data_path ="./data")
 {         
     $fullname=$data_path."/".$csv_file;
     $row = 1;
@@ -229,9 +224,9 @@ function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $force_v
             if( $lc>1 ) 
             {
                 //LEs ajout fait par le code
-                foreach( $force_values as $force_name => $force_value  )
+                if($onRowAdd)
                 {
-                    $datasql[$force_name] = $force_value;
+                    $datasql = $onRowAdd( $datasql);
                 }
                 //echo " data sql:"; var_dump( $datasql ); die("paus");
                 $insert_values[] = $datasql;
@@ -251,16 +246,42 @@ function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $force_v
 
 //gen_from_csv( $table_columns, $csv_file="FCod.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
 
+$IMO_unique = 0;
+gen_insert_from_csv($csv_file="Navires_export_stationpilotage.csv", $tablename = "stpf_navires"
+//,  $force_values=array("dateMaj"=>$now)
+,$onRowAdd = function($row)
+{
+    global $IMO_unique;
+    $vol_espace = $row["volume"];
+    $row["volume"] = preg_replace("/[^A-Za-z0-9 ]/", '', $vol_espace);
+    $row["dateMaj"] =  date("Y-m-d H:i:s");
 
-$now=date("Y-m-d");
-gen_insert_from_csv($csv_file="Navires_export_stationpilotage.csv", $tablename = "stpf_navires",  $force_values=array("dateMaj"=>$now),
+
+    //Arranger la colonne unique :
+    $dateCrea = trim( $row["dateCrea"] );
+    $dateCrea = preg_replace("/[^A-Za-z0-9 ]/", '', $dateCrea ); 
+    if( !$dateCrea ) 
+    {    
+        $row["dateCrea"] = null;
+    }
+
+    $dt = new DateTime();
+
+    //Arranger la colonne unique :
+    $numIMO = $row["numIMO"];
+    $numIMO = preg_replace("/[^A-Za-z0-9 ]/", '', $numIMO ); 
+    if( !$numIMO ) 
+    {
+        //$numIMO = "T".$dt->getTimestamp();
+        $numIMO = "YY". $IMO_unique++;
+        $row["numIMO"] = $numIMO;
+    }
+    return $row;
+}
+,
  $sep=";", $data_path ="./data");
  
 
-<<<<<<< HEAD
-=======
-gen_from_csv( $table_columns, $csv_file="FCod.xls", $tablename = "fcod",  $sep="\t", $data_path ="./data");
->>>>>>> 45a4a85f0e1d7aef2a1e9affcf4a51ee2064eaca
 
 ?>
 
