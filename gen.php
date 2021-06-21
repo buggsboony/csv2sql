@@ -92,9 +92,23 @@ INSERT INTO `$tablename`
     $values=array();
     $sql_values = array();
     foreach($insert_values as $col=>$assoc_arr)
-    {        
-        $row_values = array_values($assoc_arr);
-         $one_row_values = "('". implode("','", $row_values)."')";        
+    {                
+        $clean_row_values = array();
+        foreach( $assoc_arr as $k=>$v):            
+            $useQuotes = true;            
+            if( $v === null)
+            {
+                $v="NULL";//Mais sans les quotes
+                $useQuotes=false;
+            }
+            $clean_val = "'".$v."'";
+            if( ! $useQuotes)            
+            {
+                $clean_val = $v ;
+            }
+            $clean_row_values[] = $clean_val;
+        endforeach;            
+         $one_row_values = "(". implode(",", $clean_row_values).")";        
          //var_dump( $one_row_values ); die("check one_row_values");
          $sql_values [] = $one_row_values;
     }//next 
