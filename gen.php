@@ -10,7 +10,8 @@ $correspondances = json_decode($content);
 //echo " corresp JSON: ";var_dump( $correspondances);
 if($correspondances===null)
 {
-    echo "/* Oups, JSON invalide  */\n\n";
+   // echo "/* Oups, JSON invalide  */\n\n";
+   echo "Aucun fichier de correspondance trouvé. (skip)\n";
 }
 
 
@@ -191,11 +192,15 @@ function gen_insert_from_csv($csv_file="GDom.xls", $tablename = "gdom", $onRowAd
 {         
     $fullname=$data_path."/".$csv_file;    
     $row = 1;
-
     //$columns_htable = $table_columns[$tablename] ;//Récupérer la correspondance Excel => Colonnes nommées
     $insert_values = array();
-
+    
     $lc = 0; $columns=array();
+    if(  !file_exists($fullname) ) 
+    {
+        echo "Aouch, le fichier source '$fullname' n'est pas accessible.\n";
+        return false;
+    }
     if (($handle = fopen($fullname, "r")) !== FALSE) 
     {
         while (($data = fgetcsv($handle, $max_line=null, $sep )) !== FALSE) {         
