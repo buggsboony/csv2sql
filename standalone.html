@@ -5,9 +5,19 @@
     <title>CSV2SQL Insert</title>
 
     <style>
+      H1,H2,H3,h4{
+         color :#dbdbdb;
+      }
       body { background-color: #2a2a2a;}
       label{
          color :#ffe4c4;
+      }
+      button
+      {
+        border: solid 1px darkcyan;
+        background: bisque;
+        height: 26px;
+        color: darkslateblue;
       }
       input,textarea
       {
@@ -27,6 +37,7 @@
  
   <label for="separator">  Separator : <input type="text" id="separator" value=";"/>
   </label>
+  <button onclick="job()">Générer Requete</button>
 <!-- 
 si premier caracter est "
 aller jusqu'au prochain "  => cell
@@ -36,13 +47,20 @@ Sql remplacer \ par \\
   <textarea id="input" placeholder="Place your CSV content here">col1;col2;col3
     j'ai;"semi;colon";c:\windows
 "new
-    line";"plus""sieurs""guillemets";single 'quote' here
+    line";"plus""sieurs""guillemets";single 'quotes' here
 "quotes""""collées";B sans C;</textarea>
 
 <br/>
-<button onclick="job()">Requete</button>
- <br/>
+<br/>
+<hr/>
+<H4>
+  Result
+</H4>
+ <hr/>
 
+<br/>
+
+ <br/>
   <textarea id="output" placeholder="Output"></textarea>
    
 
@@ -222,9 +240,10 @@ function job()
     var output  = document.getElementById("output");
     var separator  = document.getElementById("separator");
     var sep=separator.value;
+    //var quotedQuote = "\\'"; //Old way not working
+    var quotedQuote = "''"; // Double quote
     //faut pas faire ça, il faut gérer la lecture entre double quotes
     var content = input.value;
-
     var lines =  csvSplit(content,sep);
     
 
@@ -247,7 +266,7 @@ function job()
             //remplacer les réels \n  //NOn! plus la peine ! mysql gère le retour chariot          
             //escaped_cell = escaped_cell.replace(/\n/g, "\\\\n");
             //combiner avec échaper la quote '
-            escaped_cell = escaped_cell.replace(/'/g, "\\'");
+            escaped_cell = escaped_cell.replace(/'/g, quotedQuote);
             out_dat.push( escaped_cell );      
         }//next cell
         data.push( "('" + out_dat.join("','") + "')" );
