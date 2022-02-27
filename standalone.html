@@ -51,7 +51,7 @@ Sql remplacer \ par \\
 "quotes""""collées";B sans C;</textarea>
 
 <br/>
-<br/>
+<br/>quote
 <hr/>
 <H4>
   Result
@@ -189,7 +189,8 @@ function csvSplit(str, sep)
           if(c=='\n')
           {
           //  console.log("new line normal");
-            nl=true;
+            nl=true;        
+            c="";//enlever le caractere \n    
           }
           if(c1===undefined)
           {
