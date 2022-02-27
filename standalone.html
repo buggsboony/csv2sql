@@ -6,10 +6,17 @@
 
     <style>
       body { background-color: #2a2a2a;}
-      textarea
+      label{
+         color :#ffe4c4;
+      }
+      input,textarea
       {
         color :#ffe4c4;
         background : #1a1a1a;
+      }
+      textarea
+      {
+      
         width: 100%;
         height :300px;
       }
@@ -18,6 +25,8 @@
   </head>
   <body>
  
+  <label for="separator">  Separator : <input type="text" id="separator" value=";"/>
+  </label>
 <!-- 
 si premier caracter est "
 aller jusqu'au prochain "  => cell
@@ -81,8 +90,9 @@ Sql remplacer \ par \\
 // }//job_old
 
 //not used
-function readCsvLine(str)
+function readCsvLine(str, sep)
 {
+  if(sep==undefined) sep=';';
   var csv_cell="";
   var r=null,dbq=null;
   var l =str.indexOf('"');
@@ -92,7 +102,7 @@ function readCsvLine(str)
     dbq = str.indexOf('""',l+1);
     if(dbq===-1) //aucune double quote trouvée
     {
-      debugger;
+     // debugger;
       r = str.indexOf('"',l+1);
       csv_cell = str.substr(l+1,r-1);
     }else
@@ -101,7 +111,7 @@ function readCsvLine(str)
     }  
   }else
   {
-    r = str.indexOf(';');    
+    r = str.indexOf(sep);    
     csv_cell= str.substr(0,r);
   }
   return csv_cell;
@@ -110,8 +120,9 @@ function readCsvLine(str)
 
 
 //Csv split function, into lines of cells
-function csvSplit(str)
+function csvSplit(str, sep)
 {
+  if(sep==undefined)sep=';';
   var line="",lines = [];
   var cq=null,c1,c=null, nl=false;
   var recording = false, recorded="";
@@ -173,7 +184,7 @@ function csvSplit(str)
               fnStockCell(true);
           }
 
-        if(c!=';') cell += c;   //ne pas compter le dernier ';'
+        if(c!=sep) cell += c;   //ne pas compter le dernier ';'
         else
         {
         //  console.log(" STOP"); debugger;
@@ -185,7 +196,7 @@ function csvSplit(str)
 
      //si " est le dernier avant caractère ; ou un \n ou une fin de chaine
     if( recording &&   
-          (     (c=='"')      &&      ( (c1==';')  || (c1=== '\n' ) ||  (c1===undefined) )
+          (     (c=='"')      &&      ( (c1==sep)  || (c1=== '\n' ) ||  (c1===undefined) )
           )      
       )
     {
@@ -198,7 +209,7 @@ function csvSplit(str)
   }//next 
   
   //save the last Mohicans, the last cell (implicite)
-  if(c==';'){
+  if(c==sep){
     lines[lines.length-1].push(""); //add the last empty cell
   }
   // console.log(lines); debugger;
@@ -209,17 +220,18 @@ function job()
 {
     var input  = document.getElementById("input");
     var output  = document.getElementById("output");
-
+    var separator  = document.getElementById("separator");
+    var sep=separator.value;
     //faut pas faire ça, il faut gérer la lecture entre double quotes
     var content = input.value;
 
-    var lines =  csvSplit(content);
+    var lines =  csvSplit(content,sep);
     
 
     //Créer la requete sql :
 
 
-    var sep=";";
+  
     var columns = lines[0];
     var data =  []; // lines.slice(1); //reste de l'array
 
@@ -244,7 +256,7 @@ function job()
 
     }//next data row
 
-    console.log(lines);   debugger;
+    //console.log(lines);   debugger;
 
     var sql = "  INSERT INTO [mytable] \n"
     + "( `"+ columns.join("`,`")+"`) \n"
