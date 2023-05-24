@@ -147,7 +147,7 @@ function csvSplit(str, sep)
   var cells=[]; var cell="";
 
   var fnStockCell = function(newline)
-  {
+  {    
         cells.push(cell); //ajouter la celle
         cell=""; //reset
         //console.log(cell, "Enregistrée");        
@@ -163,7 +163,7 @@ function csvSplit(str, sep)
     nl=false;
     cq = str[i-1]; //previous
     c = str[i];
-    c1 = str[i+1];
+    c1 = str[i+1]; //next
     
     //if( (c=='C')  ) debugger; //debug line
     //if( (cq=='w')  ) debugger; //debug line
@@ -195,6 +195,7 @@ function csvSplit(str, sep)
           if(c1===undefined)
           {
         //   console.log("new line par halt");
+            cell+=c;
             nl=true;
           }
           
